@@ -1,0 +1,67 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(SeuratData)
+library(scone)
+library(Seurat)
+library(ggplot2)
+library(RColorBrewer)
+InstallData('pbmcsca')
+data('pbmcsca')
+```
+
+```{r}
+```
+
+```{r}
+cc <- c(brewer.pal(9, "Set1"))
+batch = factor(pbmcsca$Method)
+qc = pbmcsca$nUMI
+qc <- sapply(qc, as.numeric)
+o = order(qc)[order(batch[order(qc)])]
+barplot(qc[o], col=cc[batch][o], 
+        border=cc[batch][o], main="UMI counts")
+legend("bottomleft", legend=levels(batch), fill=cc,cex=0.4)
+```
+```{r}
+expr <- GetAssayData(pbmcsca)
+col_select <- pbmcsca$Method == '10x Chromium (v2)'
+col_select_1 <- pbmcsca$Experiment == 'pbmc2'
+expr = expr[, col_select]
+expr <- expr[which(apply(expr > 0, 1, any)), ]
+```
+
+```{r}
+data(housekeeping)
+hk = intersect(housekeeping$V1,rownames(pbmcsca))
+
+# Mean log10(x+1) expression
+# Assumed False Negatives
+```
+
+
+```{r}
+num_reads = quantile(expr[expr > 0])[4]
+num_cells = 0.25*ncol(expr)
+is_common = rowSums(expr >= num_reads ) >= num_cells
+
+# Metric-based Filtering
+mfilt = metric_sample_filter(as.matrix(expr),
+                             gene_filter = is_common,
+                             pos_controls = rownames(expr) %in% hk,
+
+                             zcut = 4, mixture = FALSE,
+                             plot = TRUE)
+```
+
+```{r}
+mfilt = !apply(simplify2array(mfilt[!is.na(mfilt)]),1,any)
+```
+
+```{r}
+goodDat = expr[, mfilt]
+```
+
