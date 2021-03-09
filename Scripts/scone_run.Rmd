@@ -22,7 +22,7 @@ data('pbmcsca')
 # qc = pbmcsca$nUMI
 # qc <- sapply(qc, as.numeric)
 # o = order(qc)[order(batch[order(qc)])]
-# barplot(qc[o], col=cc[batch][o], 
+# barplot(qc[o], col=cc[batch][o],
 #         border=cc[batch][o], main="UMI counts")
 # legend("bottomleft", legend=levels(batch), fill=cc,cex=0.4)
 # ```
@@ -63,7 +63,7 @@ hk = intersect(housekeeping$V1,rownames(pbmcsca))
 #goodDat = expr[, mfilt]
 # data <- subset(pbmcsca, idents='pbmc1')
 expr = GetAssayData(pbmcsca)
-n=1000
+n=100
 sampled = sample(colnames(expr), size=n, replace=F)
 expr = expr[, sampled]
 data = pbmcsca[, sampled]
@@ -103,7 +103,7 @@ scaling=list(none=identity, # Identity - do nothing
              eff = EFF_FN, # User-defined function
 
              sum = SUM_FN, # SCONE library wrappers...
-             tmm = TMM_FN, 
+             tmm = TMM_FN,
              uq = UQ_FN,
              fq = FQT_FN,
              deseq = DESEQ_FN)
@@ -162,5 +162,5 @@ arrows(bp_obj[rownames(bp_obj) == "none,none,no_uv,no_bio,no_batch",][1],
 ```
 ```{r}
 # saveRDS(my_scone, file='n_2000_scone.rds')
-saveRDS(my_scone, file='n_1000_scone.rds')
+saveRDS(my_scone, file='100_scone.rds')
 ```
